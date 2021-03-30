@@ -15,10 +15,6 @@ def check_if(s):
         return False
 
 
-# def is_func(word):
-#     if word not in ['while', '']
-
-
 def main():
     priorities = {0: ['(', '[', 'if'], 1: [')', ']', ',', 'then', 'else'], 2: ['or'], 3: ['and'], 4: ['not'],
                   5: ['<', '>', '<=', '>=', '=', '<>'], 6: ['+', '-'], 7: ['*', '/']}
