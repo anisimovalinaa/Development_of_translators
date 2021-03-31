@@ -16,17 +16,19 @@ def check_if(s):
 
 
 def main():
-    priorities = {0: ['(', '[', 'if'], 1: [')', ']', ',', 'then', 'else'], 2: ['or'], 3: ['and'], 4: ['not'],
-                  5: ['<', '>', '<=', '>=', '=', '<>'], 6: ['+', '-'], 7: ['*', '/']}
-    examp = 'b[f(i, j)]'
+    priorities = {0: ['(', '[', 'if'], 1: [')', ']', ',', 'then', 'else'], 2: [':='], 3: ['or'], 4: ['and'], 5: ['not'],
+                  6: ['<', '>', '<=', '>=', '=', '<>'], 7: ['+', '-'], 8: ['*', '/']}
+    # examp = 'x := 3 + 4'
+    examp = 'if x=5 then x := x+1'
     # examp = 'x / y / (5 * z) + 10 * (97 + 12*2)'
-    l = [el for el in re.split(r'(\d+\.\d+|\d+|\w+|-|\+|\*|/|(|)|<|>|>=|<=|<>|=|[|]|,)', examp)
+    l = [el for el in re.split(r'(\d+\.\d+|\d+|\w+||:=|-|\+|\*|/|(|)|<|>|>=|<=|<>|=|[|]|,)', examp)
          if el not in ['', ' ', None]]
 
     print(l)
     m = 0
     count_aem = 1
     count_func = 0
+    count_if = 0
     stack = []
     out_str = ''
     for el in enumerate(l):
@@ -65,7 +67,13 @@ def main():
                 out_str += str(count_func+1) + 'Ф '
                 count_func = 0
             stack.pop()
-        elif len(stack) == 0 or priority(priorities, stack[-1]) is None or priority(priorities, stack[-1]) < p:
+        elif el[1] == 'then':
+            while stack[-1] != 'if':
+                out_str += stack.pop() + ' '
+            count_if += 1
+            stack[-1] += ' М' + str(count_if)
+            out_str += 'М' + str(count_if) + ' УПЛ '
+        elif len(stack) == 0 or el[1] == 'if' or priority(priorities, stack[-1]) is None or priority(priorities, stack[-1]) < p:
             stack.append(el[1])
         else:
             while len(stack) != 0 and priority(priorities, stack[-1]) >= p:
