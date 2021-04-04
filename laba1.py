@@ -30,6 +30,7 @@ def read_temps_var(description, dictionary):
             check('W', dictionary, arr_type_var[3])
             check('W', dictionary, array_el[0])
             list_const = re.findall(r'\d+', arr_type_var[1])
+            check('O', dictionary, '..')
             check('R', dictionary, '[')
             check('R', dictionary, ']')
             check('N', dictionary, list_const[0])
@@ -86,13 +87,22 @@ def create_dict(text):
                 check('W', d, current_str)
                 name_str = ''
                 i += 1
-                while text[i] != '\n':
+                while text[i] != ';':
                     name_str += text[i]
                     i += 1
                 check('C', d, name_str)
             elif current_str == 'var':
                 check('W', d, current_str)
-                ind = text[i::].find('begin') + i
+                indexes = []
+                ind1 = text[i::].find('begin') + i
+                ind2 = text[i::].find('procedure') + i
+                ind3 = text[i::].find('function') + i
+
+                for el in [ind1, ind2, ind3]:
+                    if el > i:
+                        indexes.append(el)
+
+                ind = min(indexes)
                 description_temps = text[i:ind:].strip()
 
                 read_temps_var(description_temps, d)
@@ -124,7 +134,7 @@ def to_share(string, dictionary):
     separators = [',', ':', ';', '(', ')', '+', '-', '/', '*', '=', '<', '>', '.', '[', ']']
     word = str()
     seq = []
-    if (len(string) > 0 and string[0] == '\'') or string in [':=', '<=', '>=', '<>', 'mod', 'div']:
+    if (len(string) > 0 and string[0] == '\'') or string in [':=', '..', '<=', '>=', '<>', 'mod', 'div']:
         code = find_code(string, dictionary)
         seq.append(code)
     else:
@@ -156,7 +166,7 @@ def split(text):
                 l.append(word)
                 word = text[i]
                 check = True
-            elif text[i:i+2] in [':=', '<=', '>=', '<>']:
+            elif text[i:i+2] in [':=', '<=', '>=', '<>', '..']:
                 l.append(word)
                 l.append(text[i:i+2])
                 word = ''
