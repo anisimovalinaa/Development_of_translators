@@ -25,11 +25,11 @@ def read_temps_var(description, dictionary):
         if len(arr_type_var) == 1:
             check('W', dictionary, type_var)
         else:
-            check('W', dictionary, arr_type_var[0])
+            check('W', dictionary, 'array')
+            check('W', dictionary, arr_type_var[1])
             check('W', dictionary, arr_type_var[2])
-            check('W', dictionary, arr_type_var[3])
             check('W', dictionary, array_el[0])
-            list_const = re.findall(r'\d+', arr_type_var[1])
+            list_const = re.findall(r'\d+', arr_type_var[0])
             check('O', dictionary, '..')
             check('R', dictionary, '[')
             check('R', dictionary, ']')
@@ -58,11 +58,11 @@ def split_operations(current_str, list_operations, dictionary):
 
 # создание словаря классов лексем
 def create_dict(text):
-    d = {'W': {}, 'I': {}, 'O': {}, 'R': {}, 'N': {}, 'C': {}}
+    d = {'W': {}, 'I': {}, 'O': {}, 'R': {r'\n': 1}, 'N': {}, 'C': {}}
 
     name_blocks = ['program', 'function', 'procedure']
     spec_words = ['begin', 'end', 'write', 'goto', 'writeln', 'readln', 'read', 'for', 'to', 'do', 'if', 'then', 'else', 'while']
-    operators = [':=', '+', '-', '*', '/', 'mod', 'div', '=', '<', '>', '<=', '>=']
+    operators = [':=', '+', '-', '..', '*', '/', 'mod', 'div', '=', '<', '>', '<=', '>=']
 
     current_str = str()
     i = 0
@@ -229,7 +229,7 @@ def output_table(class_lit):
 
 def main():
     file_pascal = open('file_pascal.txt', encoding='UTF-8')
-    text = file_pascal.read()
+    text = file_pascal.read().lower()
     file_pascal.close()
 
     dictionary = create_dict(text)

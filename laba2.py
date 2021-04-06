@@ -1,6 +1,8 @@
 import re
+import laba1
 
 
+#определяет приоритет x
 def priority(priorities, x):
     for pr in priorities:
         if x in priorities[pr]:
@@ -8,22 +10,20 @@ def priority(priorities, x):
     return None
 
 
-def check_if(s):
-    if s.find('if') == 0 and len(s) > 2:
-        return True
-    else:
-        return False
-
-
+# обработка описания переменных
 def description_var(block, outstr):
     i = 0
     count_var = 0
-    while i != len(block) - 1:
-        while block[i] != ':':
-            if block[i] not in [',', ';']:
+    while i <= len(block) - 1:
+        while i <= len(block) - 1 and block[i] != ':':
+            if block[i] not in [',', ';', '\n']:
                 outstr += block[i] + ' '
                 count_var += 1
+            elif block[i] == '\n':
+                outstr += r'\n '
             i += 1
+        if i >= len(block):
+            continue
         i += 1
         if block[i] == 'array':
             i += 1
@@ -36,7 +36,8 @@ def description_var(block, outstr):
                     z += 1
                 i += 1
             i += 2
-            outstr += '.. ' + str(z + 2) + ' АЭМ ' + block[i] + ' '
+            outstr += '.. ' + str(z + 2) + 'АЭМ ' + str(count_var) + ' ' + block[i] + ' '
+            count_var = 0
         else:
             outstr += str(count_var) + ' ' + block[i] + ' '
             count_var = 0
@@ -44,21 +45,20 @@ def description_var(block, outstr):
     return outstr
 
 
-def main():
-    priorities = {0: ['(', '[', 'if', 'while', 'for'], 1: [')', ']', ',', ';', 'then', 'else', 'do', 'to'], 2: [':=', 'goto'],
+# перевод в обратную польскую запись
+def rpn(text):
+    priorities = {0: ['(', '[', 'if', 'while', 'for'], 1: [')', ']', ',', ';', 'then', 'else', 'do', 'to'],
+                  2: [':=', 'goto'],
                   3: ['or'], 4: ['and'], 5: ['not'], 6: ['<', '>', '<=', '>=', '=', '<>'], 7: ['+', '-'], 8: ['*', '/'],
                   9: ['program', 'procedure', 'function', 'end', 'begin']}
-    # examp = 'x := 3 + 4'
-    examp = open('file_pascal.txt').read()
-    # examp = 'x / y / (5 * z) + 10 * (97 + 12*2)'
-    l = [el for el in re.split(r'(\.\.|\-?d+\.\d+|\-?\d+|\w+|;|:=|-|\+|\*|/|(|)|<|>|>=|<=|<>|=|[|]|,)', examp)
-         if el not in ['', ' ', None, "\n"]]
+
+    l = [el for el in re.split(r'(\-?\d+\.\d+|\-?\d+|\w+|;|\'.*\'|:=|<=|>=|-|\+|\*|/|(|)|<|>|<>|=|[|]|,)', text)
+         if el not in ['', ' ', None]]
     l = list(map(str.lower, l))
 
-    print(l)
     count_aem = num_proc = level_proc = 1
     count_func = count_if = count_begin = count_end = count_while = count_for = 0
-    check_if = False
+    check_if = check_fun = False
     stack = []
     out_str = ''
     i = 0
@@ -68,13 +68,13 @@ def main():
             if l[i] == 'end':
                 count_end += 1
                 if check_if:
-                    if l[i+1] == ';':
+                    if l[i + 1] == ';':
                         while not re.match(r'IF М\d+', stack[-1]):
                             out_str += stack.pop() + ' '
                         out_str += re.search(r'М\d+', stack[-1]).group(0) + ': '
                         stack.pop()
                         check_if = False
-                        count_if = 0
+                        count_if -= 1
                         i += 1
                     else:
                         pass
@@ -90,7 +90,7 @@ def main():
                         out_str += stack.pop() + ' '
                     out_str += re.search(r'ЦФ\d+', stack[-1]).group(0) + ': '
                     stack.pop()
-                    count_for -= 1
+                    count_for = 0
                     i += 1
                 else:
                     stack.append(l[i])
@@ -100,6 +100,8 @@ def main():
             elif l[i] == 'begin':
                 count_begin += 1
             else:
+                if l[i] == 'function':
+                    check_fun = True
                 if count_end != count_begin:
                     level_proc += 1
                     stack.append('PROC ' + str(num_proc) + ' ' + str(level_proc))
@@ -108,12 +110,14 @@ def main():
         elif l[i] == '.':
             stack.pop()
             out_str += 'КП '
+        elif l[i] == "\n":
+            out_str += r'\n '
         elif l[i] == ';':
-            if re.match(r'PROC+', stack[-1]):
+            if len(stack) > 0 and re.match(r'PROC+', stack[-1]):
                 dig = re.findall(r'\d+', stack[-1])
-                out_str += str(dig[0]) + ' ' + str(dig[1]) + ' НП '
+                out_str += str(dig[0]) + str(dig[1]) + 'НП '
                 stack.pop()
-            elif stack[-1] == 'end':
+            elif len(stack) > 0 and stack[-1] == 'end':
                 stack.pop()
                 out_str += 'КП '
             elif check_if:
@@ -150,8 +154,17 @@ def main():
             out_str += str(num_proc) + ' ' + str(level_proc) + ' КО '
         elif p is None:
             out_str += l[i] + ' '
+            if check_fun and l[i + 1] == '(':
+                i += 2
+                desc = []
+                while l[i] != ')':
+                    desc.append(l[i])
+                    i += 1
+                out_str = description_var(desc, out_str)
+                i -= 1
+                check_fun = False
         elif l[i] == 'goto':
-            out_str += l[i+1] + ' БП '
+            out_str += l[i + 1] + ' БП '
             i += 2
         elif l[i] == 'while' or l[i] == 'for':
             stack.append(l[i].upper())
@@ -191,12 +204,16 @@ def main():
             else:
                 stack.append(l[i])
         elif l[i] == ')':
-            while not re.match(r'\d+Ф', stack[-1]) and stack[-1] != '(':
-                out_str += stack.pop() + ' '
-            if re.match(r'\d+Ф', stack[-1]):
-                out_str += str(count_func+1) + 'Ф '
-                count_func = 0
-            stack.pop()
+            if l[i + 1] == ':':
+                i += 2
+                out_str += '1 ' + l[i] + ' КО '
+            else:
+                while not re.match(r'\d+Ф', stack[-1]) and stack[-1] != '(':
+                    out_str += stack.pop() + ' '
+                if re.match(r'\d+Ф', stack[-1]):
+                    out_str += str(count_func + 1) + 'Ф '
+                    count_func = 0
+                stack.pop()
         elif l[i] == 'if':
             stack.append(l[i].upper())
             check_if = True
@@ -217,7 +234,36 @@ def main():
     while len(stack) != 0:
         out_str += stack.pop() + ' '
 
-    print(out_str)
+    return out_str
+
+
+def translate_to_symbol(rpn_str, dictionary):
+    out_str = ''
+    rpn_str = [el for el in re.split(r'(\s|\'.{, 20}\')', rpn_str) if el not in ['', ' ']]
+
+    for el in rpn_str:
+        code = laba1.find_code(el, dictionary)
+        if code == '':
+            out_str += el + ' '
+        else:
+            out_str += code + ' '
+
+    return out_str
+
+
+def main():
+    text = open('file_pascal.txt', encoding='UTF-8').read().lower()
+    dictionary = laba1.create_dict(text)
+    rpn_str = rpn(text)
+    out_seq = translate_to_symbol(rpn_str, dictionary)
+
+    for el in dictionary.items():
+        print(el)
+    print(rpn_str)
+    print(out_seq)
+
+    out = open('reverse_Polish_notation.txt', 'w')
+    out.write(out_seq)
 
 
 if __name__ == '__main__':
