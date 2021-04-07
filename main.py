@@ -1,5 +1,4 @@
-import re
-
-d = 'IF М2'
-
-print(re.search(r'М\d+', d).group(0))
+arr = [5, 667]
+arr2 = [9, 21]
+arr2 += arr
+print(arr2)

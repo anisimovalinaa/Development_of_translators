@@ -1,18 +1,18 @@
-program fibonachi;
-var
-    a,b,c,i,n: integer;
+program mostFrequent;
+var a:array[1..10] of integer;
+    i,j,m,p,n:integer;
 begin
-    write('n = ');
-    readln(n);
-
-    a:=0;
-    write(a, ' ');
-    b := 1;
-    write(b,' ');
-    for i:=3 to n do begin
-        write(a+b,' ');
-        c := b;
-        b := a + b;
-        a := c;
-    end;
+     writeln();
+     for i:=1 to 10 do
+        begin
+            readln( a[i] );
+        end;
+     m:=1; p:=1;
+     for i:=1 to 10 do begin
+       n:=0;
+       if n>m then begin
+          m:=n; p:=i;
+       end;
+     end;
+     writeln(a[p]);
 end.

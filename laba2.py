@@ -239,8 +239,8 @@ def rpn(text):
 
 def translate_to_symbol(rpn_str, dictionary):
     out_str = ''
-    rpn_str = [el for el in re.split(r'(\s|\'.{, 20}\')', rpn_str) if el not in ['', ' ']]
-
+    rpn_str = [el for el in re.split(r'(\s|\'.{, 40}\')', rpn_str) if el not in ['', ' ']]
+    print(rpn_str)
     for el in rpn_str:
         code = laba1.find_code(el, dictionary)
         if code == '':
