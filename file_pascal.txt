@@ -2,10 +2,10 @@ program mostFrequent;
 var a:array[1..10] of integer;
     i,j,m,p,n:integer;
 begin
-     writeln();
+     writeln('введите 10 элементов массива');
      for i:=1 to 10 do
         begin
-            readln( a[i] );
+            readln(a[i]);
         end;
      m:=1;
      p:=1;
@@ -16,5 +16,5 @@ begin
           p:=i;
        end;
      end;
-     writeln(a[p]);
+     writeln('самый часто встречающийся элемент:',a[p]);
 end.

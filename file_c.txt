@@ -1,5 +1,10 @@
-for(i=1; i < 10; i++) {;
-scanf(a[i]);
-};
-m=1;
-p=1;
+int main(void) {
+	integer a[10];
+	integer i, j, m, p, n;
+
+	printf('введите 10 элементов массива');
+	for(i=0; i < 10; i++) {
+		scanf(a[i]);
+	}
+	m=1;
+	p=1;

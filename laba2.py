@@ -115,7 +115,7 @@ def rpn(text):
         elif l[i] == ';':
             if len(stack) > 0 and re.match(r'PROC+', stack[-1]):
                 dig = re.findall(r'\d+', stack[-1])
-                out_str += str(dig[0]) + str(dig[1]) + 'НП '
+                out_str += str(dig[0]) + ' ' + str(dig[1]) + ' НП '
                 stack.pop()
             elif len(stack) > 0 and stack[-1] == 'end':
                 stack.pop()
@@ -239,14 +239,25 @@ def rpn(text):
 
 def translate_to_symbol(rpn_str, dictionary):
     out_str = ''
-    rpn_str = [el for el in re.split(r'(\s|\'.{, 40}\')', rpn_str) if el not in ['', ' ']]
-    print(rpn_str)
-    for el in rpn_str:
-        code = laba1.find_code(el, dictionary)
-        if code == '':
-            out_str += el + ' '
+    rpn_str = [el for el in re.split(r'(\s|\'.{, 40\'\s)', rpn_str) if el not in ['', ' ']]
+    types = ['integer', 'real', 'string']
+
+    i = 0
+    while i != len(rpn_str):
+        code = laba1.find_code(rpn_str[i], dictionary)
+        if not(i > len(rpn_str) - 3) and (rpn_str[i + 1] == 'НП' or rpn_str[i + 2] == 'НП' or rpn_str[i + 1] == 'КО' or
+                                          rpn_str[i + 2] == 'КО'):
+            out_str += rpn_str[i] + ' '
+        elif code == 'R1':
+            if i < len(rpn_str) - 1 and rpn_str[i + 1] != '\\n':
+                out_str += code + ' '
+        elif re.match(r'\d+АЭМ', rpn_str[i - 1]) or rpn_str[i - 1] in types:
+            out_str += rpn_str[i] + ' '
+        elif code == '':
+            out_str += rpn_str[i] + ' '
         else:
             out_str += code + ' '
+        i += 1
 
     return out_str
 
