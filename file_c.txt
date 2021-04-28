@@ -1,10 +1,12 @@
 int main(void) {
-	integer a[10];
-	integer i, j, m, p, n;
+	float sum;
+	float n;
 
-	printf('введите 10 элементов массива');
-	for(i=0; i < 10; i++) {
-		scanf(a[i]);
+	sum=0;
+	n=1;
+	while (n<=30) {
+		sum=sum+n;
+		n=n+5;
 	}
-	m=1;
-	p=1;
+	printf('сумма равна: ', sum);
+}

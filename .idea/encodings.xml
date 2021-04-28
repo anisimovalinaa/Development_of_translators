@@ -2,6 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/dictionary.txt" charset="windows-1251" />
+    <file url="file://$PROJECT_DIR$/file_c.txt" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/reverse_Polish_notation.txt" charset="windows-1251" />
   </component>
 </project>

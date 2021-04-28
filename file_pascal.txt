@@ -5,7 +5,7 @@ begin
      writeln('введите 10 элементов массива');
      for i:=1 to 10 do
         begin
-            readln(a[i]);
+            readln( a[i] );
         end;
      m:=1;
      p:=1;

@@ -237,21 +237,38 @@ def rpn(text):
     return out_str
 
 
+def find_string(rpn):
+    indexes = []
+    for i in range(len(rpn)):
+        if re.match(r'\'.*', rpn[i]) or re.match(r'.*\'', rpn[i]):
+            indexes.append(i)
+    return indexes
+
+
 def translate_to_symbol(rpn_str, dictionary):
     out_str = ''
-    rpn_str = [el for el in re.split(r'(\s|\'.{, 40\'\s)', rpn_str) if el not in ['', ' ']]
+    rpn_str = rpn_str.split()
     types = ['integer', 'real', 'string']
+    indexes = find_string(rpn_str)
 
     i = 0
     while i != len(rpn_str):
-        code = laba1.find_code(rpn_str[i], dictionary)
+        if i in indexes:
+            ind = indexes.index(i)
+            string = ' '.join(rpn_str[i:indexes[ind + 1] + 1])
+            code = laba1.find_code(string, dictionary)
+            i = indexes[ind + 1] + 1
+            out_str += code + ' '
+            continue
+        else:
+            code = laba1.find_code(rpn_str[i], dictionary)
         if not(i > len(rpn_str) - 3) and (rpn_str[i + 1] == 'НП' or rpn_str[i + 2] == 'НП' or rpn_str[i + 1] == 'КО' or
                                           rpn_str[i + 2] == 'КО'):
             out_str += rpn_str[i] + ' '
         elif code == 'R1':
             if i < len(rpn_str) - 1 and rpn_str[i + 1] != '\\n':
                 out_str += code + ' '
-        elif re.match(r'\d+АЭМ', rpn_str[i - 1]) or rpn_str[i - 1] in types:
+        elif i < len(rpn_str) - 1 and (re.match(r'\d+АЭМ', rpn_str[i - 1]) or rpn_str[i + 1] in types):
             out_str += rpn_str[i] + ' '
         elif code == '':
             out_str += rpn_str[i] + ' '
