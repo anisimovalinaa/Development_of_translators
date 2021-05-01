@@ -205,6 +205,14 @@ def create_output_sequence(text, dictionary):
         sequence.append(seq)
     # for seq in sequence:
     #     print(seq)
+
+    out = open('output_sequence.txt', 'w')
+
+    for seq in sequence:
+        for word in seq:
+            out.write(word + ' ')
+        out.write('\n')
+    out.close()
     return sequence
 
 
@@ -249,14 +257,6 @@ def main():
         print(key, dictionary[key])
 
     sequence = create_output_sequence(text, dictionary)
-
-    out = open('output_sequence.txt', 'w')
-
-    for seq in sequence:
-        for word in seq:
-            out.write(word + ' ')
-        out.write('\n')
-    out.close()
 
 
 if __name__ == '__main__':
