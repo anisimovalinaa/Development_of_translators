@@ -1,20 +1,14 @@
-program mostFrequent;
-var a:array[1..10] of integer;
-    i,j,m,p,n:integer;
-begin
-     writeln('введите 10 элементов массива');
-     for i:=1 to 10 do
+program task;
+var
+   sum:real;
+   n:real;
+BEGIN
+   sum:=0;
+   n:=1;
+   while n <= 30 do
         begin
-            readln( a[i] );
+           sum:=sum+n;
+           n:=n+5;
         end;
-     m:=1;
-     p:=1;
-     for i:=1 to 10 do begin
-       n:=0;
-       if n>m then begin
-          m:=n;
-          p:=i;
-       end;
-     end;
-     writeln('самый часто встречающийся элемент:',a[p]);
-end.
+   writeln('Сумма равна: ',sum);
+END.

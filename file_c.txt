@@ -1,12 +1,19 @@
 int main(void) {
-	float sum;
-	float n;
+	int a[10];
+	int i, j, m, p, n;
 
-	sum=0;
-	n=1;
-	while (n<=30) {
-		sum=sum+n;
-		n=n+5;
+	printf('введите 10 элементов массива');
+	for(i=0; i < 10; i++) {
+		scanf(a[i]);
 	}
-	printf('сумма равна: ', sum);
+	m=1;
+	p=1;
+	for(i=0; i < 10; i++) {
+		n=0;
+		if (n>m) {
+			m=n;
+			p=i;
+		}
+	}
+	printf('самый часто встречающийся элемент:', a[p]);
 }
